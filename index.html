@@ -1,0 +1,64 @@
+/* Made with ChatGPT */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Redirecting...</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+  }
+</style>
+
+<script>
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (!id || id.trim() === "") {
+    document.body.innerHTML = "No ID found";
+    return;
+  }
+
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2IqYRvgAnUxsvSGGd7mSn8KHMs7d0TO-Os3li5sYkbG7Dj0FqfESQIAdPtQ2qyxn1BmsR7q-IkcO/pub?gid=0&single=true&output=csv&t=" + Date.now();
+
+  try {
+    const res = await fetch(sheetURL);
+    if (!res.ok) throw new Error();
+
+    const text = await res.text();
+    const lines = text.trim().split("\n");
+    lines.shift();
+
+    for (const line of lines) {
+      const row = line.split(",");
+      const rowId = row[1]?.trim();
+      const url = row[2]?.trim();
+      const expiry = row[3]?.trim();
+
+      if (rowId === id && url) {
+        if (expiry && new Date() > new Date(expiry)) break;
+        window.location.href = url.startsWith("http") ? url : "https://" + url;
+        return;
+      }
+    }
+
+    document.body.innerHTML = "No ID found";
+  } catch {
+    document.body.innerHTML = "No ID found";
+  }
+})();
+</script>
+
+</head>
+<body>
+  Redirecting...
+</body>
+</html>
