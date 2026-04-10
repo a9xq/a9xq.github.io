@@ -1,0 +1,75 @@
+<!-- Made with ChatGPT. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Redirecting...</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+  }
+</style>
+
+<script>
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+
+  // ?test
+  const firstKey = [...params.keys()][0];
+
+  // /test
+  const pathId = window.location.pathname.split("/").filter(Boolean).pop();
+
+  const id = params.get('id') || firstKey || pathId;
+
+  if (!id || id.trim() === "") {
+    document.body.innerHTML = "No ID found";
+    return;
+  }
+
+  const sheetURL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2IqYRvgAnUxsvSGGd7mSn8KHMs7d0TO-Os3li5sYkbG7Dj0FqfESQIAdPtQ2qyxn1BmsR7q-IkcO/pub?gid=0&single=true&output=csv&t=${Date.now()}`;
+
+  try {
+    const res = await fetch(sheetURL);
+    if (!res.ok) throw new Error();
+
+    const text = await res.text();
+    const lines = text.trim().split("\n");
+    lines.shift(); // remove header
+
+    for (const line of lines) {
+      const row = line.split(",");
+
+      const rowId = row[0]?.trim();   // Column A = ID
+      const url = row[1]?.trim();     // Column B = URL
+      const expiry = row[2]?.trim();  // Column C = expiry
+
+      if (rowId === id && url) {
+        if (expiry && new Date() > new Date(expiry)) break;
+
+        window.location.href = url.startsWith("http")
+          ? url
+          : "https://" + url;
+
+        return;
+      }
+    }
+
+    document.body.innerHTML = "No ID found";
+  } catch (e) {
+    document.body.innerHTML = "Error loading data";
+  }
+})();
+</script>
+
+</head>
+<body>
+  Redirecting...
+</body>
+</html>
