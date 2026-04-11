@@ -61,10 +61,19 @@
       }
     }
 
-    document.body.innerHTML = "No ID found";
-  } catch (e) {
-    document.body.innerHTML = "Error loading data";
-  }
+    try {
+  document.body.innerHTML = `
+    No ID found
+
+    <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Dev Form</a>
+  `;
+} catch (e) {
+  document.body.innerHTML = `
+    Error loading data
+
+    <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Dev Form</a>
+  `;
+}
 })();
 </script>
 
