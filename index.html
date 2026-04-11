@@ -95,13 +95,11 @@
     }
 
     document.body.innerHTML = `
-      No ID found<br/>
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Dev Form</a>
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: No ID Found</a>
     `;
   } catch (e) {
     document.body.innerHTML = `
-      Error loading data<br/>
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Dev Form</a>
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: Could Not Load Database</a>
     `;
   }
 })();
