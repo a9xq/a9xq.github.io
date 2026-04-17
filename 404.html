@@ -1,112 +1,15 @@
 <!-- Made with ChatGPT. -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Redirecting...</title>
-
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: sans-serif;
-  }
-</style>
-
-<script>
-(async () => {
-  const params = new URLSearchParams(window.location.search);
-
-  // ?test
-  const firstKey = [...params.keys()][0];
-
-  // /test
-  const pathId = window.location.pathname.split("/").filter(Boolean).pop();
-
-  const id = params.get('id') || firstKey || pathId;
-
-  if (!id || id.trim() === "") {
-    document.body.innerHTML = "No ID found";
-    return;
-  }
-
-  const sheetURL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2IqYRvgAnUxsvSGGd7mSn8KHMs7d0TO-Os3li5sYkbG7Dj0FqfESQIAdPtQ2qyxn1BmsR7q-IkcO/pub?gid=1387208253&single=true&output=csv&t=${Date.now()}`;
-
-  // Basic CSV parser (handles quoted commas)
-  function parseCSVLine(line) {
-    const result = [];
-    let current = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      const next = line[i + 1];
-
-      if (char === '"' && inQuotes && next === '"') {
-        current += '"';
-        i++; // skip escaped quote
-      } else if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        result.push(current);
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-
-    result.push(current);
-    return result;
-  }
-
-  try {
-    const res = await fetch(sheetURL);
-    if (!res.ok) throw new Error("Fetch failed");
-
-    const text = await res.text();
-    const lines = text.trim().split("\n");
-    lines.shift(); // remove header
-
-    const now = new Date();
-
-    for (const line of lines) {
-      const row = parseCSVLine(line);
-
-      const rowId = row[0]?.trim();
-      const url = row[1]?.trim();
-      const expiry = row[2]?.trim();
-
-      if (rowId === id && url) {
-        // ISO format assumed (safe)
-        if (expiry) {
-          const expDate = new Date(expiry);
-          if (!isNaN(expDate) && now > expDate) continue;
-        }
-
-        window.location.href = url.startsWith("http")
-          ? url
-          : "https://" + url;
-
-        return;
-      }
-    }
-
-    document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: No ID Found</a>
-    `;
-  } catch (e) {
-    document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: Could Not Fetch Database</a>
-    `;
-  }
-})();
-</script>
-
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=/index.html">
+  <title>Redirecting...</title>
+  <script>
+    window.location.replace("/index.html");
+  </script>
 </head>
 <body>
-  Redirecting...
+  <p>If you are not redirected, <a href="/index.html">click here</a>.</p>
 </body>
 </html>
