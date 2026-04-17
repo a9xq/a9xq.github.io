@@ -18,20 +18,12 @@
 
 <script>
 (async () => {
-  function showNoIdError() {
-    document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
-        Error: No ID Found
-      </a>
-    `;
-  }
-
   const pathParts = window.location.pathname.split("/").filter(Boolean);
   const params = new URLSearchParams(window.location.search);
 
   // 🔒 Only allow EXACTLY one path segment and NO query params
   if (pathParts.length !== 1 || [...params.keys()].length !== 0) {
-    showNoIdError();
+    document.body.innerHTML = "Invalid ID format";
     return;
   }
 
@@ -41,7 +33,7 @@
   const validIdPattern = /^[a-z0-9_-]{1,35}$/i;
 
   if (!validIdPattern.test(id)) {
-    showNoIdError();
+    document.body.innerHTML = "Invalid ID format";
     return;
   }
 
@@ -105,12 +97,17 @@
       }
     }
 
-    // If ID not found
-    showNoIdError();
-
+    document.body.innerHTML = `
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+        Error: No ID Found
+      </a>
+    `;
   } catch (e) {
-    console.error(e); // helpful for debugging
-    showNoIdError();
+    document.body.innerHTML = `
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+        Error: Could Not Fetch Database
+      </a>
+    `;
   }
 })();
 </script>
