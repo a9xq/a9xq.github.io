@@ -12,7 +12,50 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f7fb;
+  }
+
+  .card {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 320px;
+  }
+
+  .card h1 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    color: #222;
+  }
+
+  .card p {
+    margin: 0 0 25px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(124, 58, 237, 0.3);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 </style>
 
@@ -20,24 +63,25 @@
 (async () => {
   function showNoIdError() {
     document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
-        Error: No ID Found
-      </a>
+      <div class="card">
+        <h1>Error: No ID Found</h1>
+        <p>The link may be invalid or expired.</p>
+        <a class="btn" href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+          Request Access
+        </a>
+      </div>
     `;
   }
 
   const pathParts = window.location.pathname.split("/").filter(Boolean);
   const params = new URLSearchParams(window.location.search);
 
-  // 🔒 Only allow EXACTLY one path segment and NO query params
   if (pathParts.length !== 1 || [...params.keys()].length !== 0) {
     showNoIdError();
     return;
   }
 
   const id = pathParts[0].trim();
-
-  // 🔒 ID validation (shorter than UUID: max 35 chars)
   const validIdPattern = /^[a-z0-9_-]{1,35}$/i;
 
   if (!validIdPattern.test(id)) {
@@ -47,7 +91,6 @@
 
   const sheetURL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2IqYRvgAnUxsvSGGd7mSn8KHMs7d0TO-Os3li5sYkbG7Dj0FqfESQIAdPtQ2qyxn1BmsR7q-IkcO/pub?gid=1387208253&single=true&output=csv&t=${Date.now()}`;
 
-  // Basic CSV parser (handles quoted commas)
   function parseCSVLine(line) {
     const result = [];
     let current = "";
@@ -80,7 +123,7 @@
 
     const text = await res.text();
     const lines = text.trim().split("\n");
-    lines.shift(); // remove header
+    lines.shift();
 
     const now = new Date();
 
@@ -105,11 +148,10 @@
       }
     }
 
-    // If ID not found
     showNoIdError();
 
   } catch (e) {
-    console.error(e); // helpful for debugging
+    console.error(e);
     showNoIdError();
   }
 })();
@@ -117,6 +159,9 @@
 
 </head>
 <body>
-  Redirecting...
+  <div class="card">
+    <h1>Redirecting...</h1>
+    <p>Please wait while we find your link.</p>
+  </div>
 </body>
 </html>
