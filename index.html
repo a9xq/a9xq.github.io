@@ -67,7 +67,7 @@
         <h1>Error: No ID Found</h1>
         <p>The link may be invalid or expired.</p>
         <a class="btn" href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
-          Request Access
+          Create Redirect
         </a>
       </div>
     `;
@@ -76,12 +76,21 @@
   const pathParts = window.location.pathname.split("/").filter(Boolean);
   const params = new URLSearchParams(window.location.search);
 
+  // ✅ Root URL (https://a9xq.github.io/)
+  if (pathParts.length === 0) {
+    showNoIdError();
+    return;
+  }
+
+  // 🔒 Only allow EXACTLY one path segment and NO query params
   if (pathParts.length !== 1 || [...params.keys()].length !== 0) {
     showNoIdError();
     return;
   }
 
   const id = pathParts[0].trim();
+
+  // 🔒 ID validation
   const validIdPattern = /^[a-z0-9_-]{1,35}$/i;
 
   if (!validIdPattern.test(id)) {
@@ -123,7 +132,7 @@
 
     const text = await res.text();
     const lines = text.trim().split("\n");
-    lines.shift();
+    lines.shift(); // remove header
 
     const now = new Date();
 
@@ -148,6 +157,7 @@
       }
     }
 
+    // ❌ ID not found
     showNoIdError();
 
   } catch (e) {
