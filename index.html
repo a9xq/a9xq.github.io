@@ -18,18 +18,22 @@
 
 <script>
 (async () => {
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
   const params = new URLSearchParams(window.location.search);
 
-  // ?test
-  const firstKey = [...params.keys()][0];
+  // 🔒 Only allow EXACTLY one path segment and NO query params
+  if (pathParts.length !== 1 || [...params.keys()].length !== 0) {
+    document.body.innerHTML = "Invalid ID format";
+    return;
+  }
 
-  // /test
-  const pathId = window.location.pathname.split("/").filter(Boolean).pop();
+  const id = pathParts[0].trim();
 
-  const id = params.get('id') || firstKey || pathId;
+  // 🔒 ID validation (shorter than UUID: max 35 chars)
+  const validIdPattern = /^[a-z0-9_-]{1,35}$/i;
 
-  if (!id || id.trim() === "") {
-    document.body.innerHTML = "No ID found";
+  if (!validIdPattern.test(id)) {
+    document.body.innerHTML = "Invalid ID format";
     return;
   }
 
@@ -47,7 +51,7 @@
 
       if (char === '"' && inQuotes && next === '"') {
         current += '"';
-        i++; // skip escaped quote
+        i++;
       } else if (char === '"') {
         inQuotes = !inQuotes;
       } else if (char === ',' && !inQuotes) {
@@ -80,7 +84,6 @@
       const expiry = row[2]?.trim();
 
       if (rowId === id && url) {
-        // ISO format assumed (safe)
         if (expiry) {
           const expDate = new Date(expiry);
           if (!isNaN(expDate) && now > expDate) continue;
@@ -95,11 +98,15 @@
     }
 
     document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: No ID Found</a>
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+        Error: No ID Found
+      </a>
     `;
   } catch (e) {
     document.body.innerHTML = `
-      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">Error: Could Not Load Database</a>
+      <a href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+        Error: Could Not Fetch Database
+      </a>
     `;
   }
 })();
