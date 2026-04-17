@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Redirecting...</title>
+<title>Error: No ID Found</title>
 
 <style>
   body {
@@ -59,119 +59,14 @@
   }
 </style>
 
-<script>
-(async () => {
-  function showNoIdError() {
-    document.body.innerHTML = `
-      <div class="card">
-        <h1>Error: No ID Found</h1>
-        <p>The link may be invalid or expired.</p>
-        <a class="btn" href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
-          Create Redirect
-        </a>
-      </div>
-    `;
-  }
-
-  const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const params = new URLSearchParams(window.location.search);
-
-  // ✅ Root URL (https://a9xq.github.io/)
-  if (pathParts.length === 0) {
-    showNoIdError();
-    return;
-  }
-
-  // 🔒 Only allow EXACTLY one path segment and NO query params
-  if (pathParts.length !== 1 || [...params.keys()].length !== 0) {
-    showNoIdError();
-    return;
-  }
-
-  const id = pathParts[0].trim();
-
-  // 🔒 ID validation
-  const validIdPattern = /^[a-z0-9_-]{1,35}$/i;
-
-  if (!validIdPattern.test(id)) {
-    showNoIdError();
-    return;
-  }
-
-  const sheetURL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRy2IqYRvgAnUxsvSGGd7mSn8KHMs7d0TO-Os3li5sYkbG7Dj0FqfESQIAdPtQ2qyxn1BmsR7q-IkcO/pub?gid=1387208253&single=true&output=csv&t=${Date.now()}`;
-
-  function parseCSVLine(line) {
-    const result = [];
-    let current = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      const next = line[i + 1];
-
-      if (char === '"' && inQuotes && next === '"') {
-        current += '"';
-        i++;
-      } else if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        result.push(current);
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-
-    result.push(current);
-    return result;
-  }
-
-  try {
-    const res = await fetch(sheetURL);
-    if (!res.ok) throw new Error("Fetch failed");
-
-    const text = await res.text();
-    const lines = text.trim().split("\n");
-    lines.shift(); // remove header
-
-    const now = new Date();
-
-    for (const line of lines) {
-      const row = parseCSVLine(line);
-
-      const rowId = row[0]?.trim();
-      const url = row[1]?.trim();
-      const expiry = row[2]?.trim();
-
-      if (rowId === id && url) {
-        if (expiry) {
-          const expDate = new Date(expiry);
-          if (!isNaN(expDate) && now > expDate) continue;
-        }
-
-        window.location.href = url.startsWith("http")
-          ? url
-          : "https://" + url;
-
-        return;
-      }
-    }
-
-    // ❌ ID not found
-    showNoIdError();
-
-  } catch (e) {
-    console.error(e);
-    showNoIdError();
-  }
-})();
-</script>
-
 </head>
 <body>
   <div class="card">
-    <h1>Redirecting...</h1>
-    <p>Please wait while we find your link.</p>
+    <h1>Error: No ID Found</h1>
+    <p>The link may be invalid or expired.</p>
+    <a class="btn" href="https://forms.gle/cNNA2eXAmRFVdeyo9" rel="noopener noreferrer">
+      Create Redirect
+    </a>
   </div>
 </body>
 </html>
